@@ -1,8 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit';
 import actions from './contacts-actions';
 
-const initialState = localStorage.getItem('test')
-  ? JSON.parse(localStorage.getItem('test'))
+const initialState = localStorage.getItem('contacts')
+  ? JSON.parse(localStorage.getItem('contacts'))
   : [];
 
 const contactsReducer = createReducer(initialState, builder => {
