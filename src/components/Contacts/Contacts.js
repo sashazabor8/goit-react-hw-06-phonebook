@@ -1,11 +1,20 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getContacts,
+  getContactsFilter,
+} from 'redux/contacts/contacts-selectors';
 import actions from '../../redux/contacts/contacts-actions';
 import s from './Contacts.module.css';
 
-function Statistics({ contacts, filter, removeContact }) {
+function Statistics() {
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getContactsFilter);
+  const dispatch = useDispatch();
+  const removeContact = id => dispatch(actions.deleteContact(id));
+
   useEffect(() => {
-    if (contacts.length === 0) return;
+    if (contacts.length === 0) localStorage.removeItem('contacts');
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
@@ -18,6 +27,7 @@ function Statistics({ contacts, filter, removeContact }) {
       name.toLocaleLowerCase().includes(optimizedFilter)
     );
   };
+
   return (
     <ul className={s.contacts}>
       {getFilteredList().map(({ name, id, number }) => {
@@ -39,26 +49,28 @@ function Statistics({ contacts, filter, removeContact }) {
     </ul>
   );
 }
+export default Statistics;
 
-const mapStateToProps = state => {
-  return {
-    contacts: state.contacts.items,
-    filter: state.contacts.filter,
-  };
-};
+//! с помощью функции connect()
+// function Statistics({ contacts, filter, removeContact }) {
+//   useEffect(() => {
+//     if (contacts.length === 0) localStorage.removeItem('contacts');
+//     localStorage.setItem('contacts', JSON.stringify(contacts));
+//   }, [contacts]);
 
-const mapDispatchToProps = dispatch => {
-  return {
-    removeContact: id => dispatch(actions.deleteContact(id)),
-  };
-};
+//   const getFilteredList = () => {
+//     if (contacts.length === 0) return [];
 
-export default connect(mapStateToProps, mapDispatchToProps)(Statistics);
+//     const optimizedFilter = filter.toLocaleLowerCase().trim();
 
-// function Statistics({ contacts, removeContacts }) {
+//     return contacts.filter(({ name }) =>
+//       name.toLocaleLowerCase().includes(optimizedFilter)
+//     );
+//   };
+
 //   return (
 //     <ul className={s.contacts}>
-//       {contacts.map(({ name, id, number }) => {
+//       {getFilteredList().map(({ name, id, number }) => {
 //         return (
 //           <li key={id} className={s.contactsItem}>
 //             <p className={s.contactsText}>
@@ -67,7 +79,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(Statistics);
 //             <button
 //               type="button"
 //               className={s.contactsBtn}
-//               onClick={() => removeContacts(id)}
+//               onClick={() => removeContact(id)}
 //             >
 //               delete
 //             </button>
@@ -78,4 +90,17 @@ export default connect(mapStateToProps, mapDispatchToProps)(Statistics);
 //   );
 // }
 
-// export default Statistics;
+// const mapStateToProps = state => {
+//   return {
+//     contacts: state.contacts.items,
+//     filter: state.contacts.filter,
+//   };
+// };
+
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     removeContact: id => dispatch(actions.deleteContact(id)),
+//   };
+// };
+
+// export default connect(mapStateToProps, mapDispatchToProps)(Statistics);
